@@ -65,7 +65,7 @@ public:
     /**
      * constructor
      **/
-    Point2D(); 
+    Point2D();
     /**
      * copy constructor
      * @param p source
@@ -173,20 +173,20 @@ public:
      **/
     double get_h () const;
     /**
-     * angle form origin to point (alpha in polar space) 
+     * angle form origin to point (alpha in polar space)
      * @see radius
      * @see Polar2D
      * @return angle between -PI and +PI
      **/
     double angle () const;
     /**
-     * distance to origin (rho in polar space) 
+     * distance to origin (rho in polar space)
      * @see angle
      * @see Polar2D
      * @return distance
      **/
     double radius () const;
-    /** 
+    /**
      * vector without homogeneous component
      * @return state vector
      **/
@@ -196,6 +196,11 @@ public:
      * @return disance
      **/
     double  distanceTo ( const Point2D &p ) const;
+    /**
+     * returns the angle to an other point
+     * @return angle
+     **/
+    double  angleTo ( const Point2D &p ) const;
     /**
      * returns a cv::Point_<double> reference
      * @return cv
@@ -220,7 +225,7 @@ public:
      * @param os outputstream
      * @param o object
      * @return stream
-     **/  
+     **/
     friend std::ostream &operator << ( std::ostream &os, const Point2D &o ) {
         os << "[" << o.x() <<  ", " << o.y() << "]";
         return os;
@@ -229,13 +234,13 @@ public:
      * returns x and y as formated string
      * @param format using printf format
      * @return string
-     **/  
+     **/
     std::string str(const char* format = "[%6.4lf, %6.4lf, %6.5lf]") const;
-    
-    /** 
+
+    /**
      * compares with within tolerance
-     * @param o 
-     * @param tolerance 
+     * @param o
+     * @param tolerance
      **/
     bool equal( const Point2D& o, double tolerance = 0.0001 ) const ;
 };
@@ -244,7 +249,7 @@ public:
 };
 
 /**
- * overloads the * operator to allow the mutlipication fo the homogeneous point class with an opencv matrix 
+ * overloads the * operator to allow the mutlipication fo the homogeneous point class with an opencv matrix
  * @param a
  * @param b
  * @return point
@@ -256,4 +261,3 @@ template<typename _Tp> static inline tuw::Point2D operator * ( const Matx<_Tp, 3
 }
 }
 #endif //POINT2D_H
-

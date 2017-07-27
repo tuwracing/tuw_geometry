@@ -129,6 +129,14 @@ double  Point2D::distanceTo ( const Point2D &p ) const {
     return sqrt ( dx*dx+dy*dy );
 }
 /**
+ * returns the angle to an other point
+ * @return angle
+ **/
+double  Point2D::angleTo ( const Point2D &p ) const {
+    double dx =  p.val[0] - this->val[0], dy =  p.val[1] - this->val[1];
+    return atan2( dy, dx );
+}
+/**
  * returns a cv::Point_<double> reference
  * @return cv
  **/
@@ -176,18 +184,18 @@ bool Point2D::inside ( double x0, double y0, double x1, double y1 ) const {
   * returns x and y as formated string
   * @param format using printf format
   * @return string
-  **/  
+  **/
 std::string Point2D::str(const char* format) const
 {
     char str[0xFF];
-    sprintf(str,format, x(), y()); 
+    sprintf(str,format, x(), y());
     return std::string(str);
 }
 
-/** 
+/**
   * compares with within tolerance
-  * @param o 
-  * @param tolerance 
+  * @param o
+  * @param tolerance
   **/
 bool Point2D::equal( const Point2D& o, double tolerance) const {
       double d = cv::norm(o - *this);

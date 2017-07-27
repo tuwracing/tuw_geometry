@@ -55,6 +55,14 @@ Point2D Pose2D::point_ahead ( double d ) const {
     update_cached_cos_sin();
     return Point2D ( x() + costheta_ * d, y() + sintheta_ * d );
 }
+/** pose infront of the pose
+ * @param d distance ahead
+ * @return pose
+ **/
+Pose2D Pose2D::pose_ahead ( double d ) const {
+    update_cached_cos_sin();
+    return Pose2D ( x() + costheta_ * d, y() + sintheta_ * d, orientation_ );
+}
 /** translational x component
   * @return x component
   **/
@@ -169,15 +177,15 @@ Pose2D Pose2D::inv () const {
     Pose2D p ( -this->x(), -this->y(), -this->theta() );
     return p;
 }
-/** 
-  * transforms a point from pose target space into pose base space 
+/**
+  * transforms a point from pose target space into pose base space
   * @param src point in pose target space
   * @param des point in pose base space
   * @return ref point in pose base space
   **/
 Point2D &Pose2D::transform_into_base(const Point2D &src, Point2D &des) const{
     //update_cached_cos_sin();
-    des.set(src.x() * costheta_ - src.y() * sintheta_ + src.h() * x(), 
+    des.set(src.x() * costheta_ - src.y() * sintheta_ + src.h() * x(),
             src.x() * sintheta_ + src.y() * costheta_ + src.h() * y(),
 	    src.h() );
     return des;
@@ -206,6 +214,56 @@ Pose2D &Pose2D::operator -= ( const cv::Vec<double, 3> &s ) {
 }
 
 /**
+ * returns the distance to an other point
+ * @return distance
+ **/
+double Pose2D::distanceTo( const Point2D &p ) const {
+    return this->position().distanceTo(p);
+}
+
+/**
+ * returns the distance to an other pose position, ignoring angle
+ * @return distance
+ **/
+double Pose2D::distanceTo( const Pose2D &p ) const {
+    return this->position().distanceTo(p.position());
+}
+
+/**
+ * returns the angle to an other point
+ * @return angle
+ **/
+double Pose2D::angleTo( const Point2D &p ) const {
+  return this->position().angleTo(p);
+}
+
+/**
+ * returns the angle to an other pose position, ignoring angle of the pose
+ * @return angle
+ **/
+double Pose2D::angleTo( const Pose2D &p ) const {
+  return this->position().angleTo(p.position());
+}
+
+/**
+ * returns the difference of the pose heading to the angle to another pose position
+ * @return angle
+ **/
+double Pose2D::directedAngleTo( const Pose2D &p ) const {
+  return angle_difference(this->theta(), angleTo(p));
+}
+
+/**
+ * returns the average angle of this pose to the given one
+ * @return angle
+ **/
+double Pose2D::avgAngle( const Pose2D &p ) const {
+  double avgX = (this->x() + p.x()) / 2;
+  double avgY = (this->y() + p.y()) / 2;
+  return atan2(avgY, avgX);
+}
+
+/**
  * enforces the recompuation of the cached value of cos(theta) and sin(theta),
  * recomputing it only once when theta changes.
  */
@@ -224,40 +282,40 @@ void Pose2D::update_cached_cos_sin() const {
     }
     recompute_cached_cos_sin();
 }
-/** 
-  * get a (cached) value of cos(theta), 
-  * recomputing it only once when theta changes. 
+/**
+  * get a (cached) value of cos(theta),
+  * recomputing it only once when theta changes.
   * @return cos(theta)
  **/
-double Pose2D::theta_cos() const { 
-  update_cached_cos_sin(); 
-  return costheta_;   
+double Pose2D::theta_cos() const {
+  update_cached_cos_sin();
+  return costheta_;
 }
-/** 
-  * get a (cached) value of cos(theta), 
-  * recomputing it only once when theta changes. 
+/**
+  * get a (cached) value of cos(theta),
+  * recomputing it only once when theta changes.
   * @return sin(theta)
  **/
-double Pose2D::theta_sin() const { 
-  update_cached_cos_sin(); 
-  return sintheta_;   
+double Pose2D::theta_sin() const {
+  update_cached_cos_sin();
+  return sintheta_;
 }
 /**
   * returns x, y and theta as formated string
   * @param format using printf format
   * @return string
-  **/  
+  **/
 std::string Pose2D::str(const char* format) const
 {
     char str[0xFF];
-    sprintf(str,format, x(), y(), theta()); 
+    sprintf(str,format, x(), y(), theta());
     return std::string(str);
 }
 
-/** 
+/**
   * compares with within tolerance
-  * @param o 
-  * @param tolerance 
+  * @param o
+  * @param tolerance
   **/
 bool Pose2D::equal( const Pose2D& o, double tolerance) const {
       double d_position = cv::norm(o.position() - this->position());
