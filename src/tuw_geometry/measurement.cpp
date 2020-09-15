@@ -17,6 +17,8 @@ const std::string Measurement::getTypeName() const {
         return "LASER";
     case Type::LINE:
         return "LINE";
+    case Type::MARKER:
+        return "MARKER";
     }
     return "NA";
 }
